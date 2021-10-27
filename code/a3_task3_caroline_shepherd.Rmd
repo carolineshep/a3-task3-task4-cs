@@ -38,7 +38,21 @@ urchins_clean <- urchins %>%
 
 ```{r}
 ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
-  geom_histogram() +
-  facet_wrap(~ common_name) # Facet wrap by common name to sort by Purple and Red Urchins
+  geom_histogram(bins = 10) + # Change number of bins from default to 10
+  facet_wrap(~ common_name) + # Facet wrap by common name to sort Purple and Red Sea Urchins
+  labs(x = "Number of Urchins", # Change titles
+       y = "Size of Urchins (cm)",
+       title = "Size (cm) and Amount of Purple and Red Sea Urchins")
+```
+  ### Figure 1.0 Depicts the number and size of sea urchins, grouped by species - Red or Purple Sea Urchins
+  
+  
+```{r}
+urchin_stats <- urchins_clean %>%  # Name new vector
+  group_by(common_name) %>%  # Group by species
+  summarize(mean_urchins = mean(size), # Use summarize to find statistics 
+            median_urchins = median(size),
+            sd_urchins = sd(size),
+            sample_size = n())
 ```
   
