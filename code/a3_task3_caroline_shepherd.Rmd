@@ -20,12 +20,25 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(here)
+library(janitor)
 ```
 
 ## Read in the data
 
 ```{r}
 urchins <- read_csv(here("data", "urchins.csv"))
+
+## Clean names
+
+urchins_clean <- urchins %>% 
+  clean_names()
 ```
 
+## Visualize the data
 
+```{r}
+ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
+  geom_histogram() +
+  facet_wrap(~ common_name) # Facet wrap by common name to sort by Purple and Red Urchins
+```
+  
