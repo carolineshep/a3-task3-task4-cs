@@ -1,0 +1,31 @@
+---
+title: "a3_task3_caroline_shepherd"
+author: "Caroline Shepherd"
+date: "10/27/2021"
+output: 
+  html_document: 
+    toc: yes
+    theme: cerulean
+    code_folding: hide
+---
+
+## Setup
+
+```{r setup, include=FALSE, warnings = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Attach packages
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+## Read in the data
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+```
+
+
