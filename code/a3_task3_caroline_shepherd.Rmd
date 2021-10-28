@@ -40,11 +40,15 @@ urchins_clean <- urchins %>%
 
 ```{r}
 ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
-  geom_histogram(bins = 10) + # Change number of bins from default to 10
+  geom_histogram(bins = 10, aes(fill = common_name)) + # Change number of bins from default to 10
   facet_wrap(~ common_name) + # Facet wrap by common name to sort Purple and Red Sea Urchins
+  scale_fill_manual(values = c("#800080", "#FF0000")) + # Change colors of bins
   labs(x = "Number of Urchins", # Change titles
        y = "Size of Urchins (cm)",
-       title = "Size (cm) and Amount of Purple and Red Sea Urchins")
+       title = "Size (cm) and Amount of Purple and Red Sea Urchins",
+       caption = "Figure 1.0 depicts the size (in cm) and the amount of sea urchins, sorted by species (Red or Purple Sea Urchins)") +
+  theme(plot.caption = element_text(hjust = 0.5),
+        plot.title = element_text(hjust = .5))
 ```
 
 #### Figure 1.0 Depicts the number and size of sea urchins, grouped by species - Red or Purple Sea Urchins
@@ -54,20 +58,19 @@ ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
 ```{r}
 urchin_stats <- urchins_clean %>%  # Name new vector
   group_by(common_name) %>%  # Group by species
-  summarize(mean_urchins = mean(size), # Use summarize to find several statistics 
-            median_urchins = median(size),
-            sd_urchins = sd(size),
+  summarize(mean_urchins = round(mean(size, na.rm = TRUE),2), # Use summarize to find several statistics 
+            median_urchins = round(median(size, na.rm = TRUE),2),
+            sd_urchins = round(sd(size, na.rm = TRUE), 2),
             sample_size = n()) %>% 
    rename("Common Name" = common_name, # Rename table names for clarity
          "Mean Sea Urchin Size (cm)" = mean_urchins,
-         "Median Sea Urchan Size (cm)" = median_urchins,
+         "Median Sea Urchin Size (cm)" = median_urchins,
          "Standard Deviation of Sea Urchin Size (cm)" = sd_urchins,
          "Amount of Sea Urchins Sampled" = sample_size)
 
-urchin_stats %>% 
-  kbl(caption = "Statistical Analysis of Sea Urchin Size (cm), Grouped by Species") %>% 
-  kable_styling(top_gap,
-                caption = "Table 1.0 Depicts the statistical analysis of Sea Urchin Size (cm), grouped by species")
+urchin_stats %>% # Add caption to chart
+  kable(caption = "Statistical Analysis of Sea Urchin Size (cm), Grouped by Species")
+  
 ```
 
 
