@@ -1,0 +1,58 @@
+---
+title: "a3_task4_caroline_shepherd"
+author: "Caroline Shepherd"
+date: "10/28/2021"
+output: html_document
+---
+## Overview
+
+This code wrangles and visualizes data to 
+
+```{r setup, include=FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Install packages
+
+```{r}
+library(here)
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+```
+
+## Read in the data
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+
+## Clean names
+
+urchins_clean <- urchins %>% 
+  clean_names()
+```
+
+## Create new dataset to show only purple sea urchins in 2010 at Naples Reef
+
+```{r}
+purple_urchins_treatment_2010 <- urchins_clean %>% # Renaming urchins_clean and adding parameters to change it to show purple urchins and treatment for 2010
+  filter(common_name == "Purple Urchin") %>% # Filter for only purple urchins
+  mutate(date_new = mdy(date)) %>% # Add new date class
+  mutate(year = year(date_new)) %>% # Add new column for year
+  filter(year == "2010", site == "NAPL") # Filter so that only items from the year 2010 and from site NAPL show up in dataset
+```
+
+
+```{r}
+ggplot()
+```
+
+
+
+
+
+
+
+
+
+
