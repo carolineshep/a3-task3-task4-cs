@@ -21,6 +21,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(janitor)
+library(kableExtra)
+library(dplyr)
 ```
 
 ## Read in the data
@@ -44,15 +46,29 @@ ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
        y = "Size of Urchins (cm)",
        title = "Size (cm) and Amount of Purple and Red Sea Urchins")
 ```
-  ### Figure 1.0 Depicts the number and size of sea urchins, grouped by species - Red or Purple Sea Urchins
+
+#### Figure 1.0 Depicts the number and size of sea urchins, grouped by species - Red or Purple Sea Urchins
   
-  
+
+#### Table 1.0 Depicts the statistical analysis of Sea Urchin Size (cm), grouped by species of Red or Purple Sea Urchins
 ```{r}
 urchin_stats <- urchins_clean %>%  # Name new vector
   group_by(common_name) %>%  # Group by species
-  summarize(mean_urchins = mean(size), # Use summarize to find statistics 
+  summarize(mean_urchins = mean(size), # Use summarize to find several statistics 
             median_urchins = median(size),
             sd_urchins = sd(size),
-            sample_size = n())
+            sample_size = n()) %>% 
+   rename("Common Name" = common_name, # Rename table names for clarity
+         "Mean Sea Urchin Size (cm)" = mean_urchins,
+         "Median Sea Urchan Size (cm)" = median_urchins,
+         "Standard Deviation of Sea Urchin Size (cm)" = sd_urchins,
+         "Amount of Sea Urchins Sampled" = sample_size)
+
+urchin_stats %>% 
+  kbl(caption = "Statistical Analysis of Sea Urchin Size (cm), Grouped by Species") %>% 
+  kable_styling(top_gap,
+                caption = "Table 1.0 Depicts the statistical analysis of Sea Urchin Size (cm), grouped by species")
 ```
-  
+
+
+
