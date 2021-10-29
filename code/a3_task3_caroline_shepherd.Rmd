@@ -119,3 +119,4 @@ ggplot(data = purple_urchins_sum, aes(x = year, y = count)) + # Plot the data
 Figure 2.0 reflects the changes in purple sea urchin populations for these locations. The graph shows that the purple sea urchin population is in decline at the sites sampled, but there are other factors to take into consideration. Less sampling events could lead to a smaller count of urchins, which would make the graph look like the populations are in decline when they are not declining in reality.
 
 
+## End Task 3
