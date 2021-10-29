@@ -1,23 +1,19 @@
 ---
-title: "a3_task3_caroline_shepherd"
+title: "Assignment 3, Task 3 Analyzing Sea Urchin Data"
 author: "Caroline Shepherd"
 date: "10/27/2021"
-output: 
-  html_document: 
-    toc: yes
-    theme: cerulean
-    code_folding: hide
+output: html_document
 ---
 ## Overview
 
-This code wrangles and visualizes data regarding the size of sea urchins, as it relates to species.
+This code wrangles and visualizes data regarding the size of sea urchins, as it relates to species, at five different locations along the coast of Central California.
 
 Data Source: Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
 
 ## Setup
 
-```{r setup, include=FALSE, warnings = FALSE, message = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = TRUE, warnings = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ## Attach packages
@@ -34,11 +30,9 @@ library(lubridate)
 ## Read in the data
 
 ```{r}
-urchins <- read_csv(here("data", "urchins.csv"))
+urchins <- read_csv(here("data", "urchins.csv")) # Read in CSV file
 
-## Clean names
-
-urchins_clean <- urchins %>% 
+urchins_clean <- urchins %>%  # Clean names
   clean_names()
 ```
 
@@ -46,7 +40,7 @@ urchins_clean <- urchins %>%
 
 ```{r}
 ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
-  geom_histogram(bins = 10, aes(fill = common_name)) + # Change number of bins from default to 10, and fill color to common name column
+  geom_histogram(bins = 10, aes(fill = common_name)) + # Change number of bins from default to 10, and change fill color with common_name
   facet_wrap(~ common_name) + # Facet wrap by common name to sort Purple and Red Sea Urchins
   scale_fill_manual(values = c("#800080", "#FF0000")) + # Change colors of bins
   labs(x = "Number of Urchins", # Change axes titles
@@ -54,10 +48,15 @@ ggplot(data = urchins_clean, aes(x = size)) + # Create ggplot
        title = "Size (cm) and Amount of Purple and Red Sea Urchins",
        caption = "Figure 1.0 depicts the size (in cm) and the amount of sea urchins, sorted by species (Red or Purple Sea Urchins)") +
   theme(plot.caption = element_text(hjust = 0.5), # Center the figure caption
-        plot.title = element_text(hjust = .5)) # Center the figure title
+        plot.title = element_text(hjust = .5), # Center the figure title
+        legend.position = "none") # Remove unnecessary legend
+
 ```
 
-#### Table 1.0 Depicts the statistical analysis of Sea Urchin Size (cm), grouped by species of Red or Purple Sea Urchins
+## Summary of Statistics Table
+
+Table 1.0 Depicts the statistical analysis of Sea Urchin Size (cm), grouped by species of Red or Purple Sea Urchins, but ignoring site as a variable.
+
 ```{r}
 urchin_stats <- urchins_clean %>%  # Name new vector
   group_by(common_name) %>%  # Group by species
@@ -71,12 +70,14 @@ urchin_stats <- urchins_clean %>%  # Name new vector
          "Standard Deviation of Sea Urchin Size (cm)" = sd_urchins,
          "Amount of Sea Urchins Sampled" = sample_size)
 
-urchin_stats %>% # Add caption to chart
+urchin_stats %>% # Add caption to table
   kable(caption = "Table 1.0 Statistical Analysis of Sea Urchin Size (cm), Grouped by Species")
   
 ```
 
-### The table and graph above explore the size differences among Red Sea Urchins and Purple Sea Urchins. The mean and median size of Red Sea Urchins is larger than the mean and median size of Purple Sea Urchins for the populations included in this data. The spread of Purple Sea Urchin size is slightly positively skewed, and the distribution of Red Sea Urchins is normal. Red Sea Urchins have a 33% larger mean size as compared to the Purple Sea Urchins.
+
+
+The table and graph above explore the size differences among Red Sea Urchins and Purple Sea Urchins. The mean and median size of Red Sea Urchins is larger than the mean and median size of Purple Sea Urchins for the populations included in this data. The spread of Purple Sea Urchin size is slightly positively skewed, and the distribution of Red Sea Urchins is normal. Red Sea Urchins have a 41% larger mean size as compared to the Purple Sea Urchins.
 
 ## Purple Sea Urchin Data Exploration
 ```{r}
@@ -84,7 +85,7 @@ purple_urchins <- urchins_clean %>%
   filter(common_name == "Purple Urchin") %>% # Only include Purple Sea Urchins
   mutate(date_new = mdy(date)) %>%  # Add new date class
   mutate(year = year(date_new)) %>%  # Add new column for year
-  mutate(site_full = case_when(
+  mutate(site_full = case_when( # Use full names output whenever code calls for any of the shortened names
     site == "NAPL" ~ "Naples Reef",
     site == "AQUE" ~ "Arroyo Quemado Reef",
     site == "CARP" ~ "Carpenteria Reef",
@@ -93,7 +94,7 @@ purple_urchins <- urchins_clean %>%
 ```
 
 
-## Purple Sea Urchin Summary Table
+## Summarize the number of purple sea urchins based on site and year
 ```{r}
 purple_urchins_sum <- purple_urchins %>% 
   group_by(site_full, year) %>% # Group by site and by year
@@ -103,18 +104,18 @@ purple_urchins_sum <- purple_urchins %>%
 ## Make graph to show the amount of Purple Sea Urchins at each location
 
 ```{r}
-ggplot(data = purple_urchins_sum, aes(x = year, y = count)) + # Plot the data with x and y axes
-  geom_line(aes(color = site_full)) + # Fill color by site
+ggplot(data = purple_urchins_sum, aes(x = year, y = count)) + # Plot the data
+  geom_line(aes(color = site_full)) + # Fill color based on site
   theme_bw() + # Change the theme to black and white
-  labs(x = "Year", # Update title and axes titles
+  labs(x = "Year", # Update titles and caption
        y = "Amount of Purple Sea Urchins",
        title = "Amount of Purple Sea Urchins (per year) Per Site",
-       caption = "Figure 2.0: This graph depicts the amount of Purple Sea Urchins present at each location listed, and is shown over time (in years)",
-       color = "Site Location") +
-  theme(plot.caption = element_text(hjust = 0.2))
+       caption = "Figure 2.0: This graph depicts the amount of Purple Sea Urchins present at each location listed, over time (years)",
+       color = "Site Location") + # Set color to depend on Site Location
+  theme(plot.caption = element_text(hjust = 0.2)) # Center caption
   
 ```
 
-## Figure 2.0 reflects the changes in purple sea urchin populations for these locations. The graph shoes that the purple sea urchin population is in decline, but there are other factors to take into consideration, like human error. Less sampling events could lead to a smaller count of urchins, which would make the graph look like the populations are declining when they are not declining in reality.
+Figure 2.0 reflects the changes in purple sea urchin populations for these locations. The graph shows that the purple sea urchin population is in decline at the sites sampled, but there are other factors to take into consideration. Less sampling events could lead to a smaller count of urchins, which would make the graph look like the populations are in decline when they are not declining in reality.
 
 
