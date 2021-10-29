@@ -1,38 +1,43 @@
 ---
-title: "a3_task4_caroline_shepherd"
+title: "Assignment 3, Task 4 - Anaylzing Purple Sea Urchin Data by Treatment"
 author: "Caroline Shepherd"
 date: "10/28/2021"
 output: html_document
 ---
 ## Overview
 
-This code wrangles and visualizes data to 
+This code wrangles and visualizes data to explore the size distribution of purple urchins at Naples in 2010, by treatment. Specifically, this code utilizes summary statistics, a histogram, and a quantile-quantile plot to examine the size distribution and amount of purple sea urchins at the specified location and year.
 
-```{r setup, include=FALSE, warning = FALSE, message = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+Data source: Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+
+```{r setup, include=TRUE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ## Install packages
 
 ```{r}
-library(here)
 library(tidyverse)
-library(lubridate)
+library(here)
+library(janitor)
+library(kableExtra)
 library(dplyr)
+library(lubridate)
 ```
 
 ## Read in the data
 
 ```{r}
-urchins <- read_csv(here("data", "urchins.csv"))
+urchins <- read_csv(here("data", "urchins.csv")) # Read in CSV file
 
-## Clean names
-
-urchins_clean <- urchins %>% 
+urchins_clean <- urchins %>%  # Clean column names
   clean_names()
 ```
 
-## Create new dataset to show only purple sea urchins in 2010 at Naples Reef
+## Wrangle the data
+
+Create new dataset and visualize the data to show the size distribution of purple urchins at Naples in 2010, separated by treatment.
 
 ```{r}
 purple_urchins_treatment_2010 <- urchins_clean %>% # Renaming urchins_clean and adding parameters to change it to show purple urchins and treatment for 2010
@@ -42,26 +47,63 @@ purple_urchins_treatment_2010 <- urchins_clean %>% # Renaming urchins_clean and 
   filter(year == "2010", site == "NAPL") # Filter so that only items from the year 2010 and from site NAPL show up in dataset
 ```
 
+## Visualize the data
+
+Create histogram to explore the size distribution of purple urchins at Naples in 2010, separated by treatment.
 
 ```{r}
-ggplot(data = purple_urchins_treatment_2010, aes(purple_urchins_treatment_2010$size)) +
+ggplot(data = purple_urchins_treatment_2010, aes(purple_urchins_treatment_2010$size, fill = treatment, col=I("white"),)) +
   geom_histogram(bins = 10) +
   facet_wrap(~ treatment) +
   theme_bw() +
   labs(x = "Size (cm)",
        y = "Amount of Urchins",
-       title = "Amount of Purple Sea Urchins and their Size (cm) - Relative to Kelp Treatment")
+       title = "Amount of Purple Sea Urchins and their Size (cm) - Relative to Kelp Treatment") + 
+  theme(legend.position = "none")
 ```
 
+Create QQ-plot to explore the size distribution of purple urchins at Naples in 2010, separated by treatment.
 
 ```{r}
-ggplot(data = purple_urchins_treatment_2010, aes(sample=size)) +
-  geom_qq() +
-  facet_wrap(~ treatment)
+ggplot(data = purple_urchins_treatment_2010, aes(sample=size)) + # Create ggplot graph using purple_urchins_treatment_2010 data
+  geom_qq(aes(color = treatment)) + # Set color to be determined by treatment
+  facet_wrap(~ treatment) + # Facet wrap by treatment
+  theme_bw() + # Choose black and white theme
+  labs(x = "Theoretical Amounts", # Change title of axes
+       y = "Purple Sea Urchin Count",
+       title = "Size Distribution among Purple Sea Urchins, by Treatment") +
+  theme(legend.position = "none") # Remove unnecessary legend
 ```
 
+The graphs above indicate that additional research is needed to determine if different treatments affect the amount of purple sea urchins. The annual treatment is slightly positively skewed, and the control group is even less positively skewed, but the difference is minimal, therefore additional sampling and analysis should be conducted.
 
 
+## Create Summary Table
+
+Summarizing the data and creating table using kableExtra
+
+```{r}
+urchins_naples_sum <- purple_urchins_treatment_2010 %>% 
+  group_by(treatment) %>% # Group by treatment
+  # Use summarize to find summary statistics for purple sea urchin data in 2010 at the Naples site
+  summarize(mean_urchins = round(mean(size, na.rm = TRUE),2), 
+            median_urchins = round(median(size, na.rm = TRUE),2),
+            sd_urchins = round(sd(size, na.rm = TRUE), 2),
+            sample_size = n()) %>% 
+   rename("Treatment" = treatment, # Rename column names for clarity
+             "Mean (cm)" = mean_urchins,
+             "Median (cm)" = median_urchins,
+             "Standard Deviation (cm)" = sd_urchins,
+             "Sample Size" = sample_size)
+
+# Create table of summary statistics using kableExtra
+urchins_naples_sum %>% 
+  kable(caption = 
+          "Summary of Statistics for Purple Sea Urchins in Naples Reef in 2010, by Treatment") 
+
+```
+
+## End Task 4
 
 
 
