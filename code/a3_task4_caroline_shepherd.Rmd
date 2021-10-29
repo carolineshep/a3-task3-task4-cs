@@ -45,11 +45,20 @@ purple_urchins_treatment_2010 <- urchins_clean %>% # Renaming urchins_clean and 
 
 ```{r}
 ggplot(data = purple_urchins_treatment_2010, aes(purple_urchins_treatment_2010$size)) +
-  geom_histogram()
-
+  geom_histogram(bins = 10) +
+  facet_wrap(~ treatment) +
+  theme_bw() +
+  labs(x = "Size (cm)",
+       y = "Amount of Urchins",
+       title = "Amount of Purple Sea Urchins and their Size (cm) - Relative to Kelp Treatment")
 ```
 
 
+```{r}
+ggplot(data = purple_urchins_treatment_2010, aes(sample=size)) +
+  geom_qq() +
+  facet_wrap(~ treatment)
+```
 
 
 
