@@ -44,7 +44,9 @@ purple_urchins_treatment_2010 <- urchins_clean %>% # Renaming urchins_clean and 
 
 
 ```{r}
-ggplot()
+ggplot(data = purple_urchins_treatment_2010, aes(purple_urchins_treatment_2010$size)) +
+  geom_histogram()
+
 ```
 
 
